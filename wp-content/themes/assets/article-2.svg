@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3A060B"/>
+      <stop offset="1" stop-color="#1f0508"/>
+    </linearGradient>
+    <radialGradient id="r" cx="72%" cy="28%" r="55%">
+      <stop offset="0" stop-color="#F4D35E" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#F4D35E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#g)"/>
+  <rect width="1200" height="720" fill="url(#r)"/>
+  <path d="M0 540 C220 460 310 620 520 510 C720 405 830 315 1200 380 L1200 720 L0 720 Z" fill="#F4D35E" opacity="0.12"/>
+  <path d="M155 110 L230 110 L230 610 L155 610 Z M190 70 C210 132 252 157 318 178 C252 199 210 224 190 286 C170 224 128 199 62 178 C128 157 170 132 190 70 Z" fill="#F4D35E" opacity="0.85"/>
+  <text x="105" y="620" font-family="Georgia, serif" font-size="42" fill="#F4D35E" font-weight="700" letter-spacing="6">ANG BANTAYOG</text>
+  <text x="105" y="666" font-family="Arial, sans-serif" font-size="22" fill="#FFF8E7" opacity="0.92" letter-spacing="3">OPINYON</text>
+</svg>

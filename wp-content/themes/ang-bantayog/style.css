@@ -1,0 +1,2749 @@
+/*
+Theme Name: Ang Bantayog
+Theme URI: https://example.com/ang-bantayog
+Author: Ang Bantayog Staff
+Author URI: https://example.com
+Description: Opisyal na tema para sa ANG BANTAYOG, ang pampaaralang pahayagan ng Libertad National High School. Portal-style na balitaan na may teal-at-aqua na disenyo, seksyon para sa Balita, Opinyon, Lathalain, Isports, at Multimedia, at may light at dark mode.
+Version: 6.0
+Requires at least: 6.0
+Requires PHP: 7.4
+Tested up to: 6.6
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: ang-bantayog
+Tags: news, blog, education, custom-menu, featured-images, translation-ready, dark-mode-support
+*/
+
+/* ==========================================================================
+   1. Tokens
+   Light mode leads with deep teal; dark mode hands the accent to aqua,
+   because teal has no contrast left once the page goes dark.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+ 
+  /* Variable names are kept from the previous build so every downstream
+     rule still resolves; only the values changed. --teal is now Rich Navy,
+     --teal-deep Primary Navy, --aqua Accent Gold. */
+  --teal: #1b2f4d;        /* rich navy    — depth, professionalism */
+  --teal-deep: #0d1b2a;   /* primary navy — trust, authority */
+  --aqua: #c89434;        /* accent gold  — energy, importance */
+  --aqua-lit: #e1b64a;    /* lit gold     — bright accent */
+ 
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f6f4f2;   /* warm cream, lightest step of the gradation */
+  --ink: #121212;         /* charcoal */
+  --ink-soft: #6f6a63;    /* slate gray, mid step */
+  --line: rgba(18, 18, 18, 0.12);
+ 
+  --accent: var(--teal);
+  --accent-ink: #f6f4f2;
+  --rule: var(--aqua);
+  --shadow: 0 2px 10px rgba(13, 27, 42, 0.08);
+ 
+  --bar: var(--teal-deep);
+  --bar-ink: #f6f4f2;
+ 
+  /* Emphasis colours from the palette, for badges that carry meaning
+     rather than merely naming a section. Unused by default. */
+  --info: #2a2d8f;
+  --warn: #e1b64a;
+  --alert: #a72c2c;
+
+  /* One family throughout; weight and size carry the hierarchy instead of
+     a serif/sans contrast. Swap "Figtree" in both lines to try another —
+     the enqueue in functions.php has to match. */
+  --display: "Figtree", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Newsprint has no rounded corners — everything is a ruled rectangle.
+     Set this back to 12px to restore the rounded look; the individual
+     radii below were all zeroed to match, so both need changing. */
+  --radius: 0px;
+
+  /* The reference packs its lead row tight. 18px between cards is what
+     lets five rank rows sit in the height of one hero. */
+  --gap: 18px;
+  --gap-band: 44px;
+
+  /* Both the masthead and the section strip are this tall, so the two
+     banners match instead of one being padding-driven and the other
+     ratio-driven. */
+  --banner-h: 350px;
+}
+
+/* Dark mode sits on deep slate-teal rather than near-black, so cards and
+   borders still separate from the page behind them. */
+
+   [data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #12262b;
+  --surface: #1a343b;
+  --surface-2: #234249;
+  --ink: #eaf7f5;
+  --ink-soft: #a8c2c6;
+  --line: rgba(143, 235, 224, 0.24);
+
+  --accent: var(--aqua-lit);
+  --accent-ink: #0d2b31;
+  --rule: var(--aqua-lit);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+
+  --bar: #0b2027;
+  --bar-ink: #eaf7f5;
+}
+
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-weight: 400;
+  line-height: 1.6;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); }
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 900;
+  line-height: 1.14;
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+:focus-visible {
+  outline: 3px solid var(--aqua-lit);
+  outline-offset: 2px;
+  border-radius: 0;
+}
+
+.container { width: min(1240px, calc(100% - 32px)); margin-inline: auto; }
+
+.screen-reader-text {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 999;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 10px 18px; font-weight: 700;
+}
+.skip-link:focus { left: 12px; top: 12px; }
+
+.eyebrow {
+  margin: 0 0 3px;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.byline {
+  margin: 6px 0 0;
+  font-size: .76rem;
+  color: var(--ink-soft);
+}
+
+.empty {
+  margin: 0;
+  padding: 22px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: .9rem;
+}
+
+/* ---- Tags ---------------------------------------------------------------
+   Two contexts, two treatments. On a plain surface a tag is coloured text.
+   Sitting on a photograph it needs its own background — over arbitrary
+   image content, coloured text alone is not reliably legible, which is
+   what made the badges on the hero cards disappear.
+   ------------------------------------------------------------------------ */
+.tag-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
+
+.tag {
+  display: inline-block;
+  padding: 0;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border: 0;
+  color: var(--ink-soft);
+  background: none;
+}
+.tag--solid { background: none; color: var(--accent); }
+
+/* Over media */
+.hero-card__body .tag-row,
+.pick-card__body .tag-row,
+.opinion-lead__body .tag-row,
+.card__media .tag-row { gap: 5px; }
+
+.hero-card__body .tag,
+.pick-card__body .tag,
+.opinion-lead__body .tag,
+.card__media .tag,
+.tag--pinned {
+  padding: 4px 8px;
+  background: rgba(8, 26, 31, .82);
+  color: #f2fbfa;
+}
+.hero-card__body .tag--solid,
+.pick-card__body .tag--solid,
+.opinion-lead__body .tag--solid,
+.card__media .tag--solid,
+.tag--pinned.tag--solid {
+  background: var(--accent);
+  color: #ffffff;
+}
+[data-theme="dark"] .hero-card__body .tag--solid,
+[data-theme="dark"] .pick-card__body .tag--solid,
+[data-theme="dark"] .opinion-lead__body .tag--solid,
+[data-theme="dark"] .card__media .tag--solid,
+[data-theme="dark"] .tag--pinned.tag--solid { color: var(--accent-ink); }
+
+.tag--pinned { position: absolute; left: 10px; bottom: 10px; }
+
+/* ==========================================================================
+   3. Header
+   ========================================================================== */
+/* The masthead artwork already carries the paper's name and the date adds
+   nothing a reader needs, so the strip above the banner is gone. Delete
+   this rule (and restore the ones below it) to bring it back. */
+.topbar { display: none; }
+
+.topbar__inner {
+  min-height: 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.topbar__date { color: var(--aqua-lit); white-space: nowrap; }
+
+.masthead { position: relative; overflow: hidden; background: var(--surface-2); }
+[data-theme="dark"] .masthead { background: var(--surface); }
+
+.masthead__wash {
+  position: absolute; inset: 0;
+  background: url('assets/masthead-bg.gif') center / cover no-repeat;
+  opacity: 1;
+}
+/* Keeps the wordmark legible where it sits, without dimming the artwork
+   on the right where the seal and tagline live. */
+.masthead__wash::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(8, 26, 31,.75), rgba(8, 26, 31,.35) 22%, transparent 40%);
+}
+[data-theme="dark"] .masthead__wash { opacity: 1; }
+
+.masthead .container { width: 100%; margin-inline: 0; }
+
+/* Height comes from --banner-h; the left padding only keeps the wordmark
+   clear of the artwork's photo panels. */
+.masthead__inner {
+  position: relative;
+  min-height: var(--banner-h);
+  padding: 0 0 0 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand { display: inline-flex; align-items: center; gap: 16px; }
+.brand__seal { display: none; }
+.brand__text { display: block; }
+.brand__kicker {
+  display: block;
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase;
+  color: #f2fbfa;
+}
+.brand__word {
+  display: block;
+  font-family: var(--display);
+  font-size: clamp(2.1rem, 6vw, 3.5rem);
+  line-height: .95;
+  letter-spacing: -.02em;
+  color: #f2fbfa;
+}
+[data-theme="dark"] .brand__word { color: var(--aqua-lit); }
+.brand__tagline { display: block; margin-top: 4px; font-size: .8rem; color: #fff; }
+.brand:hover { color: inherit; }
+
+/* Quiet nav: a light bar with dark type and a hairline rule, so the
+   banner above it stays the only strong colour on the page. */
+.navbar {
+  position: sticky; top: 0; z-index: 90;
+  background: var(--surface); color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+.nav__inner { display: flex; align-items: center; gap: 14px; min-height: 58px; justify-content: center; }
+
+.nav__menu {
+  list-style: none; display: flex; align-items: center; flex-wrap: wrap;
+  gap: 10px; margin: 0; padding: 0;
+}
+.nav__menu a {
+  display: block; padding: 18px 12px;
+  font-size: .95rem; font-weight: 700; letter-spacing: -.01em;
+  color: var(--ink);
+  border-bottom: 3px solid transparent;
+}
+.nav__menu a:hover,
+.nav__menu .current-menu-item > a,
+.nav__menu .active > a,
+.nav__menu li.active a { color: var(--accent); border-bottom-color: var(--accent); }
+
+.nav__toggle, .nav__search-toggle {
+  background: none; border: 0; color: var(--ink);
+  cursor: pointer; padding: 8px; display: inline-flex; align-items: center;
+}
+.nav__search-toggle { margin-left: auto; }
+.nav__toggle { margin-right: auto; display: none; }
+.nav__toggle-bars, .nav__toggle-bars::before, .nav__toggle-bars::after {
+  display: block; width: 20px; height: 2px; background: currentColor; content: "";
+}
+.nav__toggle-bars { position: relative; }
+.nav__toggle-bars::before { position: absolute; top: -6px; }
+.nav__toggle-bars::after { position: absolute; top: 6px; }
+.nav__search-toggle:hover { color: var(--accent); }
+
+/* The field lives inside the nav row, so it is just a flex item that grows
+   from nothing when opened. No absolute positioning, no overlap. */
+.nav__search-panel {
+  flex: 0 1 360px;
+  min-width: 0;
+  margin-left: auto;
+  padding: 0;
+  border-top: 0;
+  background: none;
+}
+.nav__search-panel[hidden] { display: none; }
+
+.nav__search-panel .search input {
+  width: 100%; padding: 9px 18px;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--surface-2); color: var(--ink);
+  font: inherit; font-size: .9rem;
+}
+.nav__search-panel .search input:focus { outline: none; border-color: var(--accent); }
+.nav__search-panel .search input::placeholder { color: var(--ink-soft); }
+
+.nav__inner:has(.nav__search-panel:not([hidden])) .nav__search-toggle { margin-left: 8px; }
+
+/* ==========================================================================
+   4. Daglian ticker
+   ========================================================================== */
+.daglian { background: var(--surface); border-bottom: 1px solid var(--line); }
+.daglian__inner { display: flex; align-items: center; gap: 0; min-height: 46px; }
+.daglian__tag {
+  flex: none; align-self: stretch; display: inline-flex; align-items: center;
+  padding: 0 16px; margin-right: 16px;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: .7rem; font-weight: 800; letter-spacing: .16em;
+}
+.daglian__viewport { overflow: hidden; flex: 1; }
+.daglian__track { display: flex; gap: 40px; white-space: nowrap; animation: daglian-scroll 34s linear infinite; }
+.daglian:hover .daglian__track { animation-play-state: paused; }
+.daglian__item { display: inline-flex; align-items: center; gap: 8px; flex: none; font-size: .86rem; font-weight: 600; }
+/* Stays round: this is a bullet, not a container. */
+.daglian__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); flex: none; }
+
+@keyframes daglian-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ==========================================================================
+   5. Section furniture
+   Headings are plain text over a short accent rule. Filled blocks were
+   louder than the cards beneath them, which is backwards for a heading.
+   ========================================================================== */
+.band { margin-top: var(--gap-band); }
+.home > .container:first-of-type { margin-top: 20px; }
+
+.daglian + .container,
+.daglian + main > .container:first-of-type { margin-top: 20px; }
+
+.band-head,
+.section-heading {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.band-head h2,
+.section-heading h2 {
+  font-size: 1.15rem;
+  padding: 0 0 8px;
+  margin-bottom: -1px;
+  background: none;
+  color: var(--ink);
+  border-bottom: 3px solid var(--accent);
+}
+
+.band-more,
+.section-heading > a {
+  font-size: .72rem; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent);
+  padding: 0 0 8px;
+  border: 0;
+}
+.band-more:hover,
+.section-heading > a:hover { color: var(--ink); }
+
+.slider-nav { display: flex; gap: 6px; padding-bottom: 6px; }
+.slider-btn {
+  width: 28px; height: 28px; line-height: 1;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--surface); color: var(--ink);
+  font-size: 1rem; cursor: pointer;
+}
+.slider-btn:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.slider { position: relative; }
+.slider .slide { display: none; }
+.slider .slide.is-active { display: block; animation: fade-in .35s ease; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ==========================================================================
+   6. Lead grid
+   Ratio and aspect are what make this row compact. 4:3 on the hero rather
+   than 16:10 takes roughly 180px off the row at desktop width, which is
+   what lets all five rank rows sit beside it.
+   ========================================================================== */
+.lead-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--gap);
+  align-items: start;
+}
+
+.hero-card { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+.hero-card__media { display: block; position: relative; }
+.hero-card__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.hero-card--wide .hero-card__media img { aspect-ratio: 21 / 9; }
+.hero-card__body {
+  position: absolute; inset: auto 0 0 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(8, 26, 31,.95), rgba(8, 26, 31,.62) 62%, rgba(8, 26, 31,0));
+  color: #f2fbfa;
+}
+.hero-card__body .byline { color: rgba(242, 251, 250,.8); }
+.hero-card__title { font-size: clamp(1rem, 1.5vw, 1.3rem); }
+.hero-card__title a { color: #f2fbfa; }
+.hero-card__title a:hover { color: var(--aqua-lit); }
+.hero-card--wide .hero-card__body { padding: 12px; }
+.hero-card--wide .hero-card__title { font-size: clamp(1.3rem, 2.2vw, 1.9rem); }
+
+.lead-picks { display: grid; }
+.pick-card { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+.pick-card__media img { width: 100%; aspect-ratio: 16 / 11; object-fit: cover; }
+.pick-card__body {
+  position: absolute; inset: auto 0 0 0; padding: 12px;
+  background: linear-gradient(to top, rgba(8, 26, 31,.95), rgba(8, 26, 31,.6) 62%, rgba(8, 26, 31,0));
+  color: #f2fbfa;
+}
+.pick-card__body h3 { font-size: .82rem; line-height: 1.25; }
+.pick-card__body h3 a { color: #f2fbfa; }
+.pick-card__body h3 a:hover { color: var(--aqua-lit); }
+.pick-card__body .byline { color: rgba(242, 251, 250,.8); font-size: .72rem; }
+.pick-card--empty { position: static; padding: 18px; }
+.pick-card--empty .pick-card__body { position: static; background: none; color: var(--ink); padding: 0; }
+
+/* Reference rank rows are about 56px tall against our old ~76px, mostly
+   from a smaller thumbnail and much less padding. */
+.rank-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rank {
+  display: grid; grid-template-columns: 26px 62px minmax(0, 1fr);
+  gap: 9px; align-items: center;
+  padding: 7px; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--line);
+}
+.rank__num {
+  font-family: var(--display);
+  font-size: 1.25rem; font-weight: 800; line-height: 1;
+  text-align: center;
+  color: var(--accent);
+}
+@supports (-webkit-text-stroke: 1px black) {
+  .rank__num { color: transparent; -webkit-text-stroke: 1.5px var(--accent); }
+}
+.rank__media img { width: 62px; height: 46px; object-fit: cover; border-radius: 0; }
+.rank__body h3 { font-size: .84rem; line-height: 1.3; }
+.rank__body .eyebrow { font-size: .58rem; }
+.rank--empty { display: block; padding: 18px; color: var(--ink-soft); font-size: .9rem; }
+
+/* ==========================================================================
+   7. Card row
+   ========================================================================== */
+.card-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gap); }
+.card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.card__media { position: relative; display: block; }
+.card__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.card__title { font-size: .95rem; line-height: 1.3; padding: 12px 12px 0; }
+.card .byline { padding: 8px 12px 14px; font-size: .72rem; }
+
+/* ==========================================================================
+   8. Lente + promo
+   ========================================================================== */
+.lente-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--gap); margin-top: var(--gap-band); align-items: start; }
+.lente-card { border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.lente-card__media { position: relative; display: block; }
+.lente-card__media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.lente-card h3 { font-size: 1.05rem; padding: 14px 14px 0; }
+.lente-card .byline { padding: 8px 14px 14px; margin-top: 0; }
+.play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 66px; height: 46px; border-radius: 0;
+  background: rgba(23, 112, 138,.9);
+}
+.play::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  transform: translate(-42%, -50%);
+  border-left: 15px solid var(--aqua-lit);
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+
+.promo {
+  background: var(--teal-deep); color: #f2fbfa;
+  border-radius: var(--radius); padding: 26px; text-align: center;
+  box-shadow: var(--shadow);
+}
+/* Stays round: the seal is a circular mark, and the GIF has a dark square
+   backdrop baked in that squaring would expose. */
+.promo__seal { width: 84px; height: 84px; margin: 0 auto 12px; border-radius: 50%; object-fit: cover; }
+.promo__kicker { margin: 0; font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--aqua-lit); }
+.promo__quote { margin: 10px 0 18px; font-family: var(--display); font-size: 1.1rem; line-height: 1.35; }
+.promo__cta {
+  display: inline-block; padding: 10px 20px; border-radius: 0;
+  background: var(--aqua); color: var(--teal-deep);
+  font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+}
+.promo__cta:hover { background: var(--aqua-lit); color: var(--teal-deep); }
+
+/* ==========================================================================
+   9. Kolum grid
+   ========================================================================== */
+.kolum-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--gap); margin-top: var(--gap-band); align-items: start;
+}
+.kolum { display: grid; gap: 14px; align-content: start; }
+
+.opinion-lead { position: relative; border-radius: var(--radius); overflow: hidden; }
+.opinion-lead__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.opinion-lead__body {
+  position: absolute; inset: auto 0 0 0; padding: 16px;
+  background: linear-gradient(to top, rgba(8, 26, 31,.95), rgba(8, 26, 31,.6) 62%, rgba(8, 26, 31,0));
+  color: #f2fbfa;
+}
+.opinion-lead__body h3 { font-size: 1.1rem; }
+.opinion-lead__body h3 a { color: #f2fbfa; }
+.opinion-lead__body h3 a:hover { color: var(--aqua-lit); }
+.opinion-lead__body .byline { color: rgba(242, 251, 250,.8); }
+
+.kolum-card {
+  display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden;
+}
+.kolum-card__pull {
+  margin: 0; padding: 12px;
+  background: var(--surface-2);
+  border-left: 4px solid var(--aqua);
+  font-size: .72rem; line-height: 1.45; color: var(--ink-soft);
+}
+.kolum-card__body { padding: 12px 12px 12px 0; }
+.kolum-card__body h3 { font-size: .95rem; }
+
+.list-item { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: start; }
+.list-item__media img { width: 104px; height: 78px; object-fit: cover; border-radius: 0; }
+.list-item__body h3 { font-size: .95rem; line-height: 1.3; }
+
+.kolum-side { position: sticky; top: 70px; }
+.tabs { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.tabs__bar { display: flex; border-bottom: 1px solid var(--line); }
+.tabs__btn {
+  flex: 1; padding: 12px 10px; border: 0; cursor: pointer;
+  background: var(--surface-2); color: var(--ink-soft);
+  font: inherit; font-size: .78rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+  border-bottom: 3px solid transparent;
+}
+.tabs__btn.is-active { background: var(--surface); color: var(--accent); border-bottom-color: var(--accent); }
+.tabs__panel { padding: 14px; display: none; }
+.tabs__panel.is-active { display: grid; gap: 14px; }
+
+.side-item { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; align-items: center; }
+.side-item__media img { width: 72px; height: 56px; object-fit: cover; border-radius: 0; }
+.side-item h3 { font-size: .86rem; line-height: 1.3; }
+
+/* ==========================================================================
+   10. Inner pages (single, archive, search, page)
+   ========================================================================== */
+.section-block { margin-top: var(--gap-band); }
+
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--gap); }
+.news-card, .article-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden;
+}
+.news-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.news-card h3 { font-size: 1rem; padding: 12px 14px 0; }
+.news-card p { padding: 0 14px; color: var(--ink-soft); font-size: .86rem; }
+.news-card .badge { margin: 10px 14px 0; }
+.news-card .meta { padding: 0 14px 14px; }
+
+/* On a plain surface a category label is text; the colour and tracking do
+   the work, so cards stay quiet and the headline leads. */
+.badge {
+  display: inline-block; padding: 0; border-radius: 0;
+  background: none; color: var(--accent);
+  font-size: .64rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+}
+.meta { font-size: .76rem; color: var(--ink-soft); }
+
+.article-hero { padding: 34px 0 10px; }
+.article-hero h1 { font-size: clamp(1.8rem, 4vw, 2.9rem); margin-bottom: 10px; }
+.article-layout { padding-bottom: 50px; }
+.article-content { max-width: 74ch; font-size: 1.03rem; }
+.article-content p { margin: 0 0 1.1em; }
+.article-content h2 { font-size: 1.5rem; margin: 1.6em 0 .5em; }
+.article-content h3 { font-size: 1.2rem; margin: 1.4em 0 .5em; }
+.article-content blockquote {
+  margin: 1.4em 0; padding: 14px 20px;
+  border-left: 4px solid var(--aqua);
+  background: var(--surface-2); font-family: var(--display); font-size: 1.1rem;
+  border-radius: 0;
+}
+.article-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.article-content img { border-radius: var(--radius); margin: 1.2em 0; }
+
+.page-content { padding: 30px 0 50px; }
+.lead { font-size: 1.1rem; color: var(--ink-soft); }
+.archive-description { color: var(--ink-soft); }
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--gap); }
+.page-links { margin: 20px 0; font-size: .9rem; }
+
+.comments-area { max-width: 74ch; margin-top: 40px; padding-top: 24px; border-top: 2px solid var(--line); }
+.comments-title { font-size: 1.3rem; margin-bottom: 14px; }
+.comment-list { list-style: none; margin: 0 0 24px; padding: 0; display: grid; gap: 16px; }
+.comment-list li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.no-comments { color: var(--ink-soft); }
+.comments-area input[type="text"],
+.comments-area input[type="email"],
+.comments-area input[type="url"],
+.comments-area textarea {
+  width: 100%; padding: 10px 12px; font: inherit;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 0;
+}
+.comments-area input[type="submit"], .comments-area .submit {
+  padding: 11px 22px; border: 0; border-radius: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 700; letter-spacing: .05em;
+}
+
+/* ==========================================================================
+   11. Footer + floating controls
+   ========================================================================== */
+.footer { margin-top: 56px; background: var(--teal-deep); color: #f2fbfa; padding: 44px 0 0; }
+.footer__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 30px; }
+/* Stays round, same reason as .promo__seal. */
+.footer__seal { width: 66px; height: 66px; margin-bottom: 10px; border-radius: 50%; object-fit: cover; }
+.footer h2 { font-size: 1.4rem; }
+.footer h3 { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--aqua-lit); margin-bottom: 10px; }
+.footer p { color: rgba(242, 251, 250,.76); font-size: .9rem; }
+.footer a { display: block; padding: 4px 0; color: rgba(242, 251, 250,.86); font-size: .9rem; }
+.footer a:hover { color: var(--aqua-lit); }
+.footer__bottom {
+  margin-top: 34px; padding: 16px;
+  border-top: 1px solid rgba(79, 191, 184,.24);
+  text-align: center; font-size: .82rem; color: rgba(242, 251, 250,.66);
+}
+
+/* Squared toggle with both states labelled. The knob is not an icon — it
+   is the sliding highlight behind whichever label is active. */
+.theme-toggle {
+  position: fixed; right: 18px; bottom: 18px; z-index: 95;
+  width: 138px; height: 36px; padding: 3px;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--surface); cursor: pointer;
+  display: block;
+  box-shadow: var(--shadow);
+  font: inherit;
+}
+.theme-toggle::before,
+.theme-toggle::after {
+  position: absolute; top: 3px; bottom: 3px;
+  width: calc(50% - 3px);
+  display: grid; place-items: center;
+  z-index: 2;
+  font-size: .62rem; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase;
+  transition: color .22s ease;
+  pointer-events: none;
+}
+.theme-toggle::before { content: "Light"; left: 3px; color: var(--accent-ink); }
+.theme-toggle::after  { content: "Dark";  right: 3px; color: var(--ink-soft); }
+
+[data-theme="dark"] .theme-toggle::before { color: var(--ink-soft); }
+[data-theme="dark"] .theme-toggle::after  { color: var(--accent-ink); }
+
+.theme-toggle__knob {
+  position: absolute; top: 3px; left: 3px; z-index: 1;
+  width: calc(50% - 3px); height: calc(100% - 6px);
+  border-radius: 0;
+  background: var(--teal);
+  /* The glyph the script writes here is redundant next to the labels. */
+  font-size: 0; color: transparent;
+  transform: translateX(0);
+  transition: transform .22s ease, background-color .22s ease;
+}
+[data-theme="dark"] .theme-toggle__knob {
+  transform: translateX(100%);
+  background: var(--aqua-lit);
+}
+
+.back-to-top {
+  position: fixed; right: 18px; bottom: 64px; z-index: 95;
+  width: 38px; height: 38px; border-radius: 0;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s ease;
+}
+.back-to-top.visible { opacity: 1; pointer-events: auto; }
+.back-to-top:hover { background: var(--accent); color: var(--accent-ink); }
+
+/* ==========================================================================
+   12. Portal column
+   Everything below Balita runs in two columns: a main stream and a sticky
+   sidebar rail. The rail is one element spanning Multimedia, the columns
+   and Isports, rather than a panel per band — that is what keeps it with
+   the reader as the page scrolls.
+   ========================================================================== */
+.portal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  gap: 30px;
+  align-items: start;
+  margin-top: var(--gap-band);
+}
+
+.portal__main { min-width: 0; }
+
+/* align-self: start is what lets position: sticky work — a stretched grid
+   item is already as tall as the row, so it has nothing to stick within. */
+.portal__side { min-width: 0; align-self: start; }
+
+.portal__rail {
+  position: sticky;
+  /* Clears the sticky navbar rather than sliding under it. */
+  top: 76px;
+  display: grid;
+  gap: 22px;
+}
+
+.portal__main .band--first { margin-top: 0; }
+.portal__main .lente-card { width: 100%; }
+.portal__main .lente-card__media img { aspect-ratio: 16 / 9; }
+
+.rail-block {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+}
+.rail-block__title {
+  font-size: .74rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 3px solid var(--accent);
+}
+.rail-list { list-style: none; margin: 0; padding: 0; }
+.rail-list li { border-bottom: 1px solid var(--line); }
+.rail-list li:last-child { border-bottom: 0; }
+.rail-list a {
+  display: block;
+  padding: 11px 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: .88rem;
+  line-height: 1.35;
+  letter-spacing: -.015em;
+}
+.rail-list a:hover { color: var(--accent); }
+.rail-list__empty { padding: 12px 0; color: var(--ink-soft); font-size: .88rem; }
+
+/* ==========================================================================
+   13. Single-post layout
+   The article template has no .container, so it renders flush to the
+   viewport edge. Constrain and centre it here.
+   ========================================================================== */
+.article-layout {
+  width: min(1240px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.article-hero img {
+  width: 100%;
+  max-width: 820px;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center 30%;
+  border-radius: var(--radius);
+  margin-inline: auto;
+}
+
+.article-content { margin-inline: auto; }
+.article-content > .badge,
+.article-content > h1,
+.article-content > .meta,
+.article-content > .lead { max-width: none; }
+
+/* ==========================================================================
+   14. Per-section headers
+   WordPress puts a `category-<slug>` class on <body>, so each section can
+   restyle itself without touching a template. The masthead stays at the
+   top of every page; the section artwork sits in its own strip below the
+   nav, so a reader always gets masthead, menu, section.
+   ========================================================================== */
+.section-banner {
+  position: relative;
+  height: var(--banner-h);
+  background: var(--teal-deep) center / cover no-repeat;
+}
+
+body.category-balita     .section-banner,
+body.section-balita      .section-banner { background-image: url('assets/balita.gif'); }
+body.category-opinyon    .section-banner,
+body.section-opinyon     .section-banner { background-image: url('assets/opinyon.gif'); }
+body.category-lathalain  .section-banner,
+body.section-lathalain   .section-banner { background-image: url('assets/lathalain.gif'); }
+body.category-isports    .section-banner,
+body.section-isports     .section-banner { background-image: url('assets/isports.gif'); }
+body.category-multimedia .section-banner,
+body.section-multimedia  .section-banner { background-image: url('assets/multimedia.gif'); }
+
+/* Each section takes over --accent and --rule, which the badges, heading
+   rules, links and nav highlight all read from. */
+body.category-balita,     body.section-balita     { --accent: #17708a; --rule: #4fbfb8; }
+body.category-opinyon,    body.section-opinyon    { --accent: #8a4b17; --rule: #d99a4f; }
+body.category-lathalain,  body.section-lathalain  { --accent: #5a3a8a; --rule: #a98fd6; }
+body.category-isports,    body.section-isports    { --accent: #157a4a; --rule: #57c48d; }
+body.category-multimedia, body.section-multimedia { --accent: #8a1750; --rule: #d670a0; }
+
+/* Dark mode needs the lighter end of each pair, or the accent disappears
+   against the page the same way the base teal would. */
+[data-theme="dark"] body[class*="category-"],
+[data-theme="dark"] body[class*="section-"] { --accent: var(--rule); }
+
+body[class*="category-"] .section-banner,
+body[class*="section-"] .section-banner { border-bottom: 5px solid var(--rule); }
+
+/* The banner already sets the section name in large type, so the heading
+   underneath would just repeat it. */
+body[class*="category-"] .section-heading h2,
+body[class*="section-"] .section-heading h2 { display: none; }
+
+body[class*="category-"] .section-heading,
+body[class*="section-"] .section-heading { border-bottom: 0; padding-bottom: 0; }
+
+.archive-title-section {
+  display: block;
+  font-size: .7rem; font-weight: 800;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   15. Responsive
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .lead-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lead-main { grid-column: 1 / -1; }
+  /* The stacked hero gets its width back, so 4:3 would leave it squat. */
+  .lead-grid .hero-card__media img { aspect-ratio: 16 / 9; }
+  .card-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Below this the main column is too narrow to carry a 320px rail beside
+     it, so the rail drops underneath, unsticks, and runs as a row. */
+  .portal { grid-template-columns: minmax(0, 1fr); }
+  .portal__rail {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    align-items: start;
+  }
+
+  :root { --banner-h: 210px; }
+  .masthead__inner { padding-left: 48px; }
+}
+
+@media (max-width: 860px) {
+  .nav__toggle { display: inline-flex; }
+  .nav__menu {
+    display: none; position: absolute; left: 0; right: 0; top: 100%;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--surface); padding: 8px 16px 14px;
+    border-top: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .nav__menu.open { display: flex; }
+  .nav__inner { justify-content: space-between; }
+  .topbar__name { display: none; }
+  .topbar__inner { justify-content: center; }
+  :root { --banner-h: 150px; }
+  .masthead__inner { padding-left: 24px; }
+  .masthead__wash::after {
+    background: linear-gradient(90deg, rgba(8, 26, 31,.8), rgba(8, 26, 31,.5) 45%, rgba(8, 26, 31,.2));
+  }
+}
+
+@media (max-width: 720px) {
+  .nav__inner { flex-wrap: wrap; }
+  .nav__search-panel { flex: 1 0 100%; margin-left: 0; padding: 0 0 12px; }
+
+  .lead-grid, .lente-grid, .kolum-grid { grid-template-columns: minmax(0, 1fr); }
+  .card-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kolum-card { grid-template-columns: 100px minmax(0, 1fr); }
+  .portal__rail { grid-template-columns: minmax(0, 1fr); }
+
+  /* The body unstacks from the photo here, so overlaid badges would sit on
+     plain surface — they go back to the on-surface treatment. */
+  .hero-card__body, .pick-card__body, .opinion-lead__body { position: static; background: var(--surface); color: var(--ink); }
+  .hero-card__title a, .pick-card__body h3 a, .opinion-lead__body h3 a { color: var(--ink); }
+  .hero-card__body .byline, .pick-card__body .byline, .opinion-lead__body .byline { color: var(--ink-soft); }
+  .hero-card__body .tag,
+  .pick-card__body .tag,
+  .opinion-lead__body .tag { background: none; color: var(--ink-soft); padding: 0; }
+  .hero-card__body .tag--solid,
+  .pick-card__body .tag--solid,
+  .opinion-lead__body .tag--solid { background: none; color: var(--accent); }
+}
+
+@media (max-width: 480px) {
+  .card-row { grid-template-columns: minmax(0, 1fr); }
+  .rank { grid-template-columns: 24px 56px minmax(0, 1fr); }
+  .rank__media img { width: 56px; height: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  html { scroll-behavior: auto; }
+  .daglian__track { animation: none; }
+}
+
+/* ==========================================================================
+   16. Lead row alignment
+   The picks column has to equal the hero's height, not merely be near it.
+   Fixed heights do that; aspect-ratio cannot, since it derives height from
+   whatever width the column happens to get.
+   ========================================================================== */
+@media (min-width: 1081px) {
+  /* One number controls the whole row. */
+  .lead-grid { --lead-h: 560px; }
+
+  .lead-grid .lead-main .hero-card__media img {
+    aspect-ratio: auto;
+    height: var(--lead-h);
+  }
+
+  /* Two cards plus the 14px gap between them = the hero's height. */
+  .lead-picks .pick-card__media img {
+    aspect-ratio: auto;
+    height: calc((var(--lead-h) - 14px) / 2);
+  }
+
+  /* The rank list ends level with them too. */
+    .lead-sikat .rank-list {
+      height: var(--lead-h);
+      grid-auto-rows: 1fr;
+    }
+  }
+
+
+/* ==========================================================================
+   17. Lead row: equal heading heights
+   The Pangunahing Istorya head carries slider buttons and the others do
+   not, so its row is taller and starts its card lower. Pinning all three
+   to one height is what makes the columns start level.
+   ========================================================================== */
+.lead-grid .band-head {
+  position: relative;
+  min-height: 0;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+
+/* Absolute, so a 28px button cannot make this row taller than the two
+   heads beside it. */
+.lead-grid .slider-nav {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  padding-bottom: 0;
+} 
+/* ==========================================================================
+   18. Multimedia page
+   Layout for page-templates/template-multimedia.php: breadcrumb, title,
+   then one block per sub-section, with the sidebar rail alongside.
+
+   Append to the end of style.css.
+   ========================================================================== */
+.page-multimedia { padding: 26px 0 60px; }
+
+/* ---- Breadcrumb -------------------------------------------------------- */
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.crumbs a:hover { color: var(--accent); }
+.crumbs__here { color: var(--ink); }
+
+/* ---- Header ------------------------------------------------------------ */
+.mm-head { max-width: 68ch; margin: 14px 0 28px; }
+.mm-head__title { font-size: clamp(2rem, 4.5vw, 3rem); }
+.mm-head__intro {
+  margin-top: 12px;
+  font-size: 1.02rem;
+  color: var(--ink-soft);
+}
+.mm-head__intro p { margin: 0 0 .8em; }
+.mm-head__intro p:last-child { margin-bottom: 0; }
+
+/* ---- Blocks ------------------------------------------------------------ */
+/* The first block sits right under the header, so it skips the top margin
+   the rest of the stack uses. */
+.mm-block + .mm-block { margin-top: var(--gap-band); }
+
+/* Sub-section headings read a step below the page title — they are
+   navigation within the page, not competing headlines. */
+.mm-block .band-head h2 { font-size: 1.05rem; }
+
+.mm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.mm-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mm-card__media { position: relative; display: block; }
+.mm-card__media img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.mm-card__title { font-size: .98rem; line-height: 1.3; padding: 14px 14px 0; }
+.mm-card .byline { padding: 8px 14px 16px; }
+
+/* A smaller play badge for grid thumbnails; the full-size one swamps them. */
+.play--sm { width: 46px; height: 32px; }
+.play--sm::after {
+  border-left-width: 11px;
+  border-top-width: 7px;
+  border-bottom-width: 7px;
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+@media (max-width: 1080px) {
+  /* The rail is already handled by section 12 at this width; the grid just
+     needs to drop a column now that the main column is full width. */
+  .mm-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 860px) {
+  .mm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .mm-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   19. Compact Balita Cards (Homepage) - OVERRIDE
+   ========================================================================== */
+#balita .card-row {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+#balita .card__media img {
+  width: 100% !important;
+  aspect-ratio: 16 / 11 !important;
+  object-fit: cover !important;
+  height: auto !important;
+}
+
+#balita .card__title {
+  font-size: 0.85rem !important;
+  line-height: 1.3 !important;
+  padding: 8px 8px 0 !important;
+  margin: 0 !important;
+}
+
+#balita .card .byline {
+  font-size: 0.65rem !important;
+  padding: 4px 8px 10px !important;
+  margin: 0 !important;
+}
+
+#balita .tag--pinned {
+  left: 6px !important;
+  bottom: 6px !important;
+  padding: 2px 5px !important;
+  font-size: 0.55rem !important;
+}
+
+/* Force the card container to be compact */
+#balita .card {
+  overflow: hidden !important;
+}
+
+/* ==========================================================================
+   20. Compact Nakaligtaan Cards (Homepage)
+   ========================================================================== */
+#nakaligtaan .card-row {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+#nakaligtaan .card__media img {
+  width: 100% !important;
+  aspect-ratio: 16 / 11 !important;
+  object-fit: cover !important;
+  height: auto !important;
+}
+
+#nakaligtaan .card__title {
+  font-size: 0.85rem !important;
+  line-height: 1.3 !important;
+  padding: 8px 8px 0 !important;
+  margin: 0 !important;
+}
+
+#nakaligtaan .card__title a {
+  color: var(--ink) !important;
+}
+
+#nakaligtaan .card__title a:hover {
+  color: var(--accent) !important;
+}
+
+#nakaligtaan .card .byline {
+  font-size: 0.65rem !important;
+  padding: 4px 8px 10px !important;
+  margin: 0 !important;
+  color: var(--ink-soft) !important;
+}
+
+#nakaligtaan .tag--pinned {
+  left: 6px !important;
+  bottom: 6px !important;
+  padding: 2px 5px !important;
+  font-size: 0.55rem !important;
+}
+
+#nakaligtaan .card {
+  overflow: hidden !important;
+  border: 1px solid var(--line) !important;
+}
+
+/* ==========================================================================
+   21. Compact Opinyon & Lathalain Layout
+   ========================================================================== */
+
+/* Opinyon Section - Featured + Grid */
+#opinyon .opinion-lead {
+  margin-bottom: 18px;
+}
+
+#opinyon .opinion-lead__media img {
+  aspect-ratio: 16 / 10 !important;
+  height: auto !important;
+}
+
+#opinyon .opinion-lead__body {
+  padding: 14px !important;
+}
+
+#opinyon .opinion-lead__body h3 {
+  font-size: 1.05rem !important;
+  line-height: 1.3 !important;
+}
+
+/* Kolum cards in 2-column grid */
+#opinyon .kolum-card {
+  grid-template-columns: 90px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  margin-bottom: 12px;
+}
+
+#opinyon .kolum-card__pull {
+  padding: 10px !important;
+  font-size: 0.68rem !important;
+  line-height: 1.4 !important;
+  border-left-width: 3px !important;
+}
+
+#opinyon .kolum-card__body {
+  padding: 10px 10px 10px 0 !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: 0.88rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+#opinyon .kolum-card__body .byline {
+  font-size: 0.65rem !important;
+}
+
+/* Lathalain Section - List Format */
+#lathalain .list-item {
+  grid-template-columns: 100px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+#lathalain .list-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#lathalain .list-item__media img {
+  width: 100px !important;
+  height: 75px !important;
+  aspect-ratio: 4 / 3 !important;
+  object-fit: cover !important;
+}
+
+#lathalain .list-item__body {
+  padding: 0 !important;
+}
+
+#lathalain .list-item__body .eyebrow {
+  font-size: 0.6rem !important;
+  margin-bottom: 4px !important;
+}
+
+#lathalain .list-item__body h3 {
+  font-size: 0.9rem !important;
+  line-height: 1.35 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+#lathalain .list-item__body .byline {
+  font-size: 0.65rem !important;
+}
+
+/* Make the kolum grid display properly */
+.kolum-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: var(--gap) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1080px) {
+  #opinyon .kolum-card {
+    grid-template-columns: 1fr !important;
+  }
+  
+  #lathalain .list-item {
+    grid-template-columns: 80px minmax(0, 1fr) !important;
+  }
+  
+  #lathalain .list-item__media img {
+    width: 80px !important;
+    height: 60px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .kolum-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  
+  #lathalain .list-item {
+    grid-template-columns: 1fr !important;
+  }
+  
+  #lathalain .list-item__media {
+    margin-bottom: 8px;
+  }
+  
+  #lathalain .list-item__media img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+}
+
+/* ==========================================================================
+   22. Opinyon & Lathalain Side-by-Side Layout
+   ========================================================================== */
+
+/* Force the 2-column grid for the whole kolum section */
+.kolum-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 30px !important;
+  margin-top: var(--gap-band) !important;
+  align-items: start !important;
+}
+
+/* ---------- OPINYON COLUMN ---------- */
+
+/* Large featured article at the top of Opinyon */
+#opinyon .opinion-lead {
+  position: relative !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
+
+#opinyon .opinion-lead__media img {
+  width: 100% !important;
+  aspect-ratio: 16 / 10 !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+#opinyon .opinion-lead__body {
+  position: absolute !important;
+  inset: auto 0 0 0 !important;
+  padding: 14px !important;
+  background: linear-gradient(to top, rgba(8, 26, 31, .92), rgba(8, 26, 31, .55) 60%, transparent) !important;
+  color: #f2fbfa !important;
+}
+
+#opinyon .opinion-lead__body h3 {
+  font-size: 1.05rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+#opinyon .opinion-lead__body h3 a {
+  color: #f2fbfa !important;
+}
+
+#opinyon .opinion-lead__body .byline {
+  color: rgba(242, 251, 250, .8) !important;
+  font-size: 0.7rem !important;
+  margin: 0 !important;
+}
+
+/* Smaller kolum cards below the featured */
+#opinyon .kolum-card {
+  display: grid !important;
+  grid-template-columns: 110px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+  margin-bottom: 12px !important;
+}
+
+#opinyon .kolum-card__pull {
+  margin: 0 !important;
+  padding: 10px !important;
+  background: var(--surface-2) !important;
+  border-left: 3px solid var(--aqua) !important;
+  font-size: 0.7rem !important;
+  line-height: 1.4 !important;
+  color: var(--ink-soft) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+#opinyon .kolum-card__body {
+  padding: 10px 10px 10px 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+#opinyon .kolum-card__body .eyebrow {
+  font-size: 0.6rem !important;
+  margin: 0 0 4px 0 !important;
+  color: var(--accent) !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: 0.88rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+#opinyon .kolum-card__body h3 a {
+  color: var(--ink) !important;
+}
+
+#opinyon .kolum-card__body h3 a:hover {
+  color: var(--accent) !important;
+}
+
+#opinyon .kolum-card__body .byline {
+  font-size: 0.65rem !important;
+  color: var(--ink-soft) !important;
+  margin: 0 !important;
+}
+
+/* ---------- LATHALAIN COLUMN ---------- */
+
+#lathalain .list-item {
+  display: grid !important;
+  grid-template-columns: 110px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  align-items: start !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+#lathalain .list-item:last-child {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+#lathalain .list-item__media img {
+  width: 110px !important;
+  height: 82px !important;
+  aspect-ratio: 4 / 3 !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+#lathalain .list-item__body .eyebrow {
+  font-size: 0.6rem !important;
+  margin: 0 0 4px 0 !important;
+  color: var(--accent) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+
+#lathalain .list-item__body h3 {
+  font-size: 0.9rem !important;
+  line-height: 1.35 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+#lathalain .list-item__body h3 a {
+  color: var(--ink) !important;
+}
+
+#lathalain .list-item__body h3 a:hover {
+  color: var(--accent) !important;
+}
+
+#lathalain .list-item__body .byline {
+  font-size: 0.65rem !important;
+  color: var(--ink-soft) !important;
+  margin: 0 !important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1080px) {
+  .kolum-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  #opinyon .kolum-card {
+    grid-template-columns: 1fr !important;
+  }
+  
+  #opinyon .kolum-card__pull {
+    border-left: none !important;
+    border-top: 3px solid var(--aqua) !important;
+  }
+  
+  #lathalain .list-item {
+    grid-template-columns: 90px minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  #lathalain .list-item__media img {
+    width: 90px !important;
+    height: 68px !important;
+  }
+}
+
+/* ==========================================================================
+   24. Weather Banner - Compact & Properly Sized
+   ========================================================================== */
+.weather-banner {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.weather-banner img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 180px !important; /* Limits the height */
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1080px) {
+  .weather-banner img {
+    max-height: 150px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .weather-banner {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .weather-banner img {
+    max-height: 120px !important;
+  }
+}
+
+/* ==========================================================================
+   25. Hanapin ang Salita - Simple Image Widget
+   ========================================================================== */
+.hanapin-salita {
+  text-align: center;
+  padding: 16px 18px 20px !important;
+}
+
+.hanapin-salita .rail-block__title {
+  text-align: left;
+  margin-bottom: 12px !important;
+}
+
+.hanapin-salita__image {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hanapin-salita__image:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow);
+}
+
+.hanapin-salita__image img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  aspect-ratio: 3 / 4 !important; /* Portrait ratio for your GIF */
+  object-fit: contain !important;
+  background: var(--surface-2);
+}
+
+@media (max-width: 1080px) {
+  .hanapin-salita__image img {
+    aspect-ratio: 4 / 3 !important;
+  }
+}
+
+/* ==========================================================================
+   26. DSPC Na! Image Button
+   ========================================================================== */
+.promo__dspc {
+  display: block;
+  margin-top: 18px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.promo__dspc:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.promo__dspc img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+/* Adjust promo container spacing */
+.promo {
+  padding: 26px !important;
+}
+
+/* ==========================================================================
+   27. Footer Publication Image
+   ========================================================================== */
+.footer__publication {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer__publication-img {
+  width: 100% !important;
+  max-width: 280px !important;
+  height: auto !important;
+  display: block !important;
+  border-radius: var(--radius);
+}
+
+/* Adjust footer grid to fit 4 columns */
+.footer__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 30px !important;
+  align-items: start !important;
+}
+
+@media (max-width: 1080px) {
+  .footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer__grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  
+  .footer__publication-img {
+    max-width: 100% !important;
+  }
+}
+
+/* Hide Archives and Categories widgets */
+.widget_archive,
+.widget_categories,
+.widget_block:has(.wp-block-archives),
+.widget_block:has(.wp-block-categories) {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Footer Grid - 3 Columns
+   ========================================================================== */
+.footer__grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 30px !important;
+  align-items: start !important;
+}
+
+/* Column 1: Ang Bantayog info */
+.footer__grid > div:first-child {
+  grid-column: 1 !important;
+}
+
+/* Column 2: Mga Seksyon links */
+.footer__grid > div:nth-child(2) {
+  grid-column: 2 !important;
+}
+
+/* Column 3: Online Publication image (far right) */
+.footer__publication {
+  grid-column: 3 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: start !important;
+}
+
+.footer__publication-img {
+  width: 100% !important;
+  max-width: 280px !important;
+  height: auto !important;
+  display: block !important;
+  border-radius: var(--radius);
+}
+
+/* Responsive */
+@media (max-width: 1080px) {
+  .footer__grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  
+  .footer__publication {
+    grid-column: 1 / -1 !important;
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer__grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .footer__publication {
+    grid-column: 1 !important;
+  }
+  
+  .footer__publication-img {
+    max-width: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   Balita Section - Category Page Style
+   ========================================================================== */
+.balita-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 30px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+.balita-card-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.balita-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.balita-card__media { position: relative; display: block; }
+
+.balita-card__media img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+}
+
+.balita-card__title {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  padding: 12px 12px 6px;
+  margin: 0;
+  font-weight: 800;
+}
+
+.balita-card__title a { color: var(--ink); }
+.balita-card__title a:hover { color: var(--accent); }
+
+.balita-card__meta {
+  padding: 0 12px 8px;
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.balita-card__excerpt {
+  padding: 0 12px 10px;
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  flex: 1;
+}
+
+.balita-card__more {
+  display: inline-block;
+  padding: 0 12px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.balita-card__more:hover { color: var(--ink); }
+
+.balita-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.balita-promo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+}
+
+.balita-tabs__bar {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+
+.balita-tabs__btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  border-bottom: 3px solid transparent;
+}
+
+.balita-tabs__btn.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.balita-tabs__panel { display: none; }
+.balita-tabs__panel.is-active { display: block; }
+
+.balita-side-item {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.balita-side-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.balita-side-item__media img {
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.balita-side-item__body .eyebrow {
+  font-size: 0.58rem;
+  margin: 0 0 3px;
+}
+
+.balita-side-item__body h3 {
+  font-size: 0.82rem;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.balita-side-item__body h3 a { color: var(--ink); }
+.balita-side-item__body h3 a:hover { color: var(--accent); }
+
+@media (max-width: 1080px) {
+  .balita-layout { grid-template-columns: 1fr; }
+  .balita-sidebar { order: -1; }
+}
+
+@media (max-width: 720px) {
+  .balita-card-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .balita-card-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   Compact Balita Cards - Final Fix
+   ========================================================================== */
+.balita-card__media img {
+  width: 100% !important;
+  height: auto !important;          /* ← this is the key fix */
+  aspect-ratio: 16 / 9 !important;  /* short landscape images */
+  object-fit: cover !important;
+}
+
+.balita-card__title {
+  font-size: 0.85rem !important;
+  padding: 10px 10px 4px !important;
+  line-height: 1.3 !important;
+}
+
+.balita-card__meta {
+  font-size: 0.65rem !important;
+  padding: 0 10px 6px !important;
+}
+
+.balita-card__excerpt {
+  font-size: 0.75rem !important;
+  padding: 0 10px 8px !important;
+}
+
+.balita-card__more {
+  padding: 0 10px 10px !important;
+  font-size: 0.68rem !important;
+}
+
+.balita-card-row {
+  gap: 16px !important;
+}
+
+.lente-card__media--embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+.lente-card__media--embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ==========================================================================
+   28. Multimedia inline embed
+   Append to the end of style.css.
+
+   The Multimedia card plays the video itself rather than showing a thumbnail
+   that links away — a video section whose videos do not play is a strange
+   thing for a reader to meet.
+   ========================================================================== */
+.lente-card__embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+/* Vertical clips (YouTube Shorts, Reels) get a portrait frame. At 16/9 the
+   player letterboxes them into the middle third and most of the card is
+   black. Capped and centred so the card does not become a tower. */
+.lente-card__embed--portrait {
+  aspect-ratio: 9 / 16;
+  max-width: 340px;
+  max-height: 600px;
+  margin-inline: auto;
+}
+
+.lente-card__embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* WordPress wraps oEmbeds in its own container, which carries a padding-top
+   ratio hack that fights the aspect-ratio above. */
+.lente-card__embed .wp-block-embed__wrapper,
+.lente-card__embed .wp-embed-aspect-16-9,
+.lente-card__embed .wp-embed-aspect-9-16 {
+  position: absolute;
+  inset: 0;
+  padding: 0 !important;
+}
+
+/* ==========================================================================
+   Theme toggle: sun / moon indicators
+   ========================================================================== */
+.theme-toggle::before {
+  content: "☀️";
+  font-size: .9rem;
+  letter-spacing: 0;
+}
+
+.theme-toggle::after {
+  content: "🌙";
+  font-size: .9rem;
+  letter-spacing: 0;
+}
+
+/* ==========================================================================
+   Single post: show full featured image (no zoom / no crop)
+   ========================================================================== */
+.article-hero img {
+  aspect-ratio: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+/* ==========================================================================
+   Theme toggle redesign: sun/moon switch
+   ========================================================================== */
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 95;
+  width: 76px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f6f4f2;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  transition: background-color .25s ease;
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: #0b2027;
+}
+
+/* Faint hint icons on both ends */
+.theme-toggle::before,
+.theme-toggle::after {
+  position: absolute;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  width: auto;
+  display: block;
+  font-size: .95rem;
+  line-height: 1;
+  letter-spacing: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity .25s ease;
+}
+
+.theme-toggle::before { content: "☀️"; left: 9px;  opacity: .35; }
+.theme-toggle::after  { content: "🌙"; right: 9px; opacity: .35; }
+
+/* Active side lights up */
+.theme-toggle::before { opacity: .35; }
+.theme-toggle::after  { opacity: .35; }
+body:not([data-theme="dark"]) .theme-toggle::before,
+html:not([data-theme="dark"]) .theme-toggle::before { opacity: 1; }
+[data-theme="dark"] .theme-toggle::after { opacity: 1; }
+
+/* Sliding knob carries the current mode's icon */
+.theme-toggle__knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--aqua);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+  display: grid;
+  place-items: center;
+  font-size: 0;
+  color: transparent;
+  transform: translateX(0);
+  transition: transform .25s ease, background-color .25s ease;
+}
+
+.theme-toggle__knob::after {
+  content: "☀️";
+  font-size: .9rem;
+}
+
+[data-theme="dark"] .theme-toggle__knob {
+  transform: translateX(38px);
+  background: #1b2f4d;
+}
+
+[data-theme="dark"] .theme-toggle__knob::after {
+  content: "🌙";
+}
+/* ==========================================================================
+   Theme toggle: animated sun → crescent moon
+   ========================================================================== */
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 95;
+  width: 64px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f6f4f2;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  transition: background-color .35s ease;
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: #0b2027;
+}
+
+/* Remove old emoji labels */
+.theme-toggle::before,
+.theme-toggle::after {
+  content: none;
+}
+
+/* ---- The sun / moon body ---- */
+.theme-toggle__knob {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  background: var(--aqua-lit);          /* golden sun */
+  font-size: 0;
+  color: transparent;
+  transform: translateX(0);
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1), background-color .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob {
+  transform: translateX(32px);          /* slides to the right */
+  background: #eaf7f5;                  /* pale moon */
+}
+
+/* ---- Sun rays (spin + shrink away in dark mode) ---- */
+.theme-toggle__knob::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, var(--aqua-lit) 0deg 14deg, transparent 14deg 45deg);
+  -webkit-mask: radial-gradient(circle, transparent 52%, #000 53% 72%, transparent 73%);
+          mask: radial-gradient(circle, transparent 52%, #000 53% 72%, transparent 73%);
+  transition: transform .45s ease, opacity .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob::before {
+  transform: rotate(150deg) scale(0);
+  opacity: 0;
+}
+
+/* ---- The "bite" that carves the crescent ---- */
+.theme-toggle__knob::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: #f6f4f2;
+  transform: translate(16px, -16px) scale(0);
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1), background-color .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob::after {
+  background: #0b2027;
+  transform: translate(7px, -7px) scale(1);
+}
+
+/* ==========================================================================
+   Theme toggle: animated sun → crescent moon (contained)
+   ========================================================================== */
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 95;
+  width: 68px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f6f4f2;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  overflow: hidden;                 /* ← keeps sun/moon inside the pill */
+  transition: background-color .35s ease;
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: #0b2027;
+}
+
+.theme-toggle::before,
+.theme-toggle::after {
+  content: none;
+}
+
+/* ---- Sun / moon body ---- */
+.theme-toggle__knob {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  background: var(--aqua-lit);
+  font-size: 0;
+  color: transparent;
+  transform: translateX(0);
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1), background-color .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob {
+  transform: translateX(34px);
+  background: #eaf7f5;
+}
+
+/* ---- Rays (smaller, so they fit inside the pill) ---- */
+.theme-toggle__knob::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, var(--aqua-lit) 0deg 14deg, transparent 14deg 45deg);
+  -webkit-mask: radial-gradient(circle, transparent 66%, #000 67% 92%, transparent 93%);
+          mask: radial-gradient(circle, transparent 66%, #000 67% 92%, transparent 93%);
+  transition: transform .45s ease, opacity .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob::before {
+  transform: rotate(150deg) scale(0);
+  opacity: 0;
+}
+
+/* ---- The bite that carves the crescent ---- */
+.theme-toggle__knob::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: #f6f4f2;
+  transform: translate(16px, -16px) scale(0);
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1), background-color .45s ease;
+}
+
+[data-theme="dark"] .theme-toggle__knob::after {
+  background: #0b2027;
+  transform: translate(6px, -6px) scale(1);
+}
+
+/* Remove sun rays from the theme toggle */
+.theme-toggle__knob::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* ==========================================================================
+   Kolum (Opinyon) cards — clean vertical layout
+   ========================================================================== */
+#opinyon .kolum-card {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  margin-bottom: 16px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+/* Title block first */
+#opinyon .kolum-card__body {
+  order: -1 !important;
+  display: block !important;
+  padding: 14px 16px 0 !important;
+}
+
+#opinyon .kolum-card__body .eyebrow {
+  font-size: .62rem !important;
+  margin: 0 0 5px !important;
+  color: var(--accent) !important;
+  font-weight: 800 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: 1rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 6px !important;
+  font-weight: 800 !important;
+}
+
+#opinyon .kolum-card__body h3 a { color: var(--ink) !important; }
+#opinyon .kolum-card__body h3 a:hover { color: var(--accent) !important; }
+
+#opinyon .kolum-card__body .byline {
+  font-size: .68rem !important;
+  color: var(--ink-soft) !important;
+  margin: 0 !important;
+}
+
+/* Quote box second, clamped to 4 lines so every card is the same height */
+#opinyon .kolum-card__pull {
+  order: 2 !important;
+  margin: 10px 16px 16px !important;
+  padding: 10px 12px !important;
+  background: var(--surface-2) !important;
+  border-left: 3px solid var(--aqua) !important;
+  font-size: .78rem !important;
+  line-height: 1.55 !important;
+  font-style: italic !important;
+  color: var(--ink-soft) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* Tighten kolum card spacing */
+#opinyon .kolum-card {
+  gap: 0 !important;
+}
+
+#opinyon .kolum-card__pull {
+  margin-top: 8px !important;
+}
+
+/* ==========================================================================
+   Kolum cards — image + quote overlay (reference design)
+   ========================================================================== */
+#opinyon .kolum-card {
+  display: grid !important;
+  grid-template-columns: 210px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  margin-bottom: 16px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+/* Left tile: image with quote overlay */
+#opinyon .kolum-card__media {
+  position: relative !important;
+  display: block !important;
+  min-height: 200px !important;
+  order: 0 !important;
+}
+
+#opinyon .kolum-card__media img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Navy quote box pinned to bottom of the image */
+#opinyon .kolum-card__pull {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  margin: 0 !important;
+  padding: 24px 12px 16px !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+  font-size: .68rem !important;
+  line-height: 1.55 !important;
+  font-style: normal !important;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  max-height: 75% !important;
+  overflow: hidden !important;
+}
+
+#opinyon .kolum-card__pull::before {
+  content: "\201C";
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--aqua-lit);
+  font-family: Georgia, serif;
+}
+
+#opinyon .kolum-card__pull::after {
+  content: "\201D";
+  position: absolute;
+  bottom: 2px;
+  right: 8px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--aqua-lit);
+  font-family: Georgia, serif;
+}
+
+/* Right side: centered text block */
+#opinyon .kolum-card__body {
+  order: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 14px 16px !important;
+}
+
+#opinyon .kolum-card__body .eyebrow {
+  font-size: .62rem !important;
+  margin: 0 0 6px !important;
+  color: var(--aqua) !important;
+  font-weight: 800 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: 1.05rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 8px !important;
+  font-weight: 800 !important;
+}
+
+#opinyon .kolum-card__body h3 a { color: var(--ink) !important; }
+#opinyon .kolum-card__body h3 a:hover { color: var(--aqua) !important; }
+
+#opinyon .kolum-card__body .byline {
+  font-size: .7rem !important;
+  color: var(--ink-soft) !important;
+  margin: 0 !important;
+}
+
+/* Mobile: stack image on top */
+@media (max-width: 640px) {
+  #opinyon .kolum-card {
+    grid-template-columns: 1fr !important;
+  }
+  #opinyon .kolum-card__media {
+    min-height: 220px !important;
+  }
+}
+
+/* ==========================================================================
+   Compact kolum cards — match the other column's size
+   ========================================================================== */
+#opinyon .kolum-card {
+  grid-template-columns: 175px minmax(0, 1fr) !important;
+  height: 180px !important;
+  margin-bottom: 14px !important;
+}
+
+#opinyon .kolum-card__media {
+  min-height: 180px !important;
+  height: 180px !important;
+}
+
+/* Quote box: smaller text, clamped to 4 lines */
+#opinyon .kolum-card__pull {
+  padding: 20px 10px 12px !important;
+  font-size: .62rem !important;
+  line-height: 1.45 !important;
+  max-height: 70% !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+#opinyon .kolum-card__pull::before {
+  font-size: 1.2rem !important;
+  top: 3px !important;
+}
+
+#opinyon .kolum-card__pull::after {
+  font-size: 1.2rem !important;
+  bottom: 2px !important;
+}
+
+/* Right side: tighter + title clamped to 2 lines */
+#opinyon .kolum-card__body {
+  padding: 12px 14px !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: .95rem !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+#opinyon .kolum-card__body .byline {
+  font-size: .66rem !important;
+}
+
+/* Mobile: let cards breathe again */
+@media (max-width: 640px) {
+  #opinyon .kolum-card {
+    height: auto !important;
+    grid-template-columns: 1fr !important;
+  }
+  #opinyon .kolum-card__media {
+    height: 200px !important;
+  }
+}
+
+/* ==========================================================================
+   KOLUM CARDS — FINAL (image + quote overlay, compact)
+   ========================================================================== */
+#opinyon .kolum-card {
+  display: grid !important;
+  grid-template-columns: 175px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 180px !important;
+  margin-bottom: 14px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+#opinyon .kolum-card__media {
+  position: relative !important;
+  display: block !important;
+  height: 180px !important;
+  min-height: 0 !important;
+  order: 0 !important;
+  overflow: hidden !important;
+}
+
+#opinyon .kolum-card__media img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+#opinyon .kolum-card__pull {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  margin: 0 !important;
+  padding: 18px 10px 10px !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font-size: .62rem !important;
+  line-height: 1.45 !important;
+  font-style: normal !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  max-height: 75% !important;
+}
+
+#opinyon .kolum-card__pull::before {
+  content: "\201C" !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 7px !important;
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+  color: var(--aqua-lit) !important;
+}
+
+#opinyon .kolum-card__pull::after {
+  content: "\201D" !important;
+  position: absolute !important;
+  bottom: 1px !important;
+  right: 7px !important;
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+  color: var(--aqua-lit) !important;
+}
+
+#opinyon .kolum-card__body {
+  order: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 12px 14px !important;
+}
+
+#opinyon .kolum-card__body .eyebrow {
+  font-size: .62rem !important;
+  margin: 0 0 6px !important;
+  color: var(--aqua) !important;
+}
+
+#opinyon .kolum-card__body h3 {
+  font-size: .95rem !important;
+  line-height: 1.3 !important;
+  margin: 0 0 6px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+#opinyon .kolum-card__body .byline {
+  font-size: .66rem !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 640px) {
+  #opinyon .kolum-card { height: auto !important; grid-template-columns: 1fr !important; }
+  #opinyon .kolum-card__media { height: 200px !important; }
+}
+
+/* ==========================================================================
+   KOLUM CARDS — MASTER OVERRIDE (same size as Lathalain items)
+   ========================================================================== */
+body #opinyon .kolum-card {
+  display: grid !important;
+  grid-template-columns: 150px minmax(0, 1fr) !important;
+  gap: 0 !important;
+  height: 150px !important;
+  max-height: 150px !important;
+  margin-bottom: 16px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  overflow: hidden !important;
+}
+
+body #opinyon .kolum-card__media {
+  position: relative !important;
+  display: block !important;
+  width: 150px !important;
+  height: 150px !important;
+  min-height: 0 !important;
+  max-height: 150px !important;
+  order: 0 !important;
+  overflow: hidden !important;
+}
+
+body #opinyon .kolum-card__media img {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+body #opinyon .kolum-card__pull {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  margin: 0 !important;
+  padding: 14px 8px 8px !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+  border: 0 !important;
+  font-size: .55rem !important;
+  line-height: 1.4 !important;
+  font-style: normal !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  max-height: 70% !important;
+}
+
+body #opinyon .kolum-card__pull::before {
+  content: "\201C" !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 6px !important;
+  font-size: .9rem !important;
+  color: var(--aqua-lit) !important;
+}
+
+body #opinyon .kolum-card__pull::after {
+  content: "\201D" !important;
+  position: absolute !important;
+  bottom: 1px !important;
+  right: 6px !important;
+  font-size: .9rem !important;
+  color: var(--aqua-lit) !important;
+}
+
+body #opinyon .kolum-card__body {
+  order: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 10px 12px !important;
+}
+
+body #opinyon .kolum-card__body .eyebrow {
+  font-size: .58rem !important;
+  margin: 0 0 4px !important;
+  color: var(--aqua) !important;
+}
+
+body #opinyon .kolum-card__body h3 {
+  font-size: .88rem !important;
+  line-height: 1.25 !important;
+  margin: 0 0 4px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+body #opinyon .kolum-card__body .byline {
+  font-size: .62rem !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 640px) {
+  body #opinyon .kolum-card { height: auto !important; max-height: none !important; grid-template-columns: 1fr !important; }
+  body #opinyon .kolum-card__media { width: 100% !important; height: 180px !important; }
+}
+

@@ -1,0 +1,127 @@
+/* Custom Audio Player Layout */
+.ab-custom-player {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ab-instruction {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.ab-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.ab-btn {
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.ab-btn:hover { background: #444; }
+
+.ab-play-btn {
+    background: #0073aa;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+.ab-play-btn:hover { background: #005a87; }
+
+.ab-mute-btn { background: transparent; color: #333; font-size: 20px; }
+.ab-mute-btn:hover { background: #ddd; }
+
+.ab-time {
+    font-family: monospace;
+    font-size: 13px;
+    color: #333;
+    min-width: 90px;
+}
+
+.ab-waveform {
+    flex: 1;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-width: 100px;
+}
+
+.ab-bar {
+    width: 3px;
+    background: #bbb;
+    border-radius: 2px;
+    transition: background 0.1s, height 0.1s;
+}
+
+.ab-bar.active {
+    background: #0073aa;
+    animation: wave 0.5s infinite alternate;
+}
+
+@keyframes wave {
+    0% { height: 10px; }
+    100% { height: 30px; }
+}
+
+.ab-speed {
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    background: white;
+}
+
+.ab-progress-container {
+    width: 100%;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.ab-progress-bar {
+    height: 100%;
+    background: #0073aa;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.ab-status {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #888;
+}
+
+.ab-powered {
+    margin-top: 10px;
+    text-align: right;
+    font-size: 11px;
+    color: #999;
+}
+.ab-powered em { font-style: italic; color: #777; }
+
+@media (max-width: 600px) {
+    .ab-controls { justify-content: center; }
+    .ab-waveform { width: 100%; order: 10; margin-top: 10px; }
+}
